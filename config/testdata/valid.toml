@@ -1,0 +1,15 @@
+[server]
+port = 8080
+
+[log]
+level = "info"
+path = "./logs"
+name = "ethereum-parser"
+error_log = "error.log"
+warn_log = "warn.log"
+info_log = "info.log"
+debug_log = "debug.log"
+max_size = 300
+max_backups = 10
+max_age= 7
+disable_stacktrace = false
