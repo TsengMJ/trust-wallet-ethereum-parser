@@ -1,13 +1,82 @@
-### Todo Priority
+## Methods
 
-- Implement background fetching block transactions (cron, including multi-thread fetching)
-- Implement share transactions storage
+### WebSocket:
 
-### Done
+Route: ws://localhost:8080/ws
 
-- Websocket for 3 action: GetCurrentBlock, Subscribe, GetTransactions
-- Implement basic ethereum parser in pkg
-- Unify reponse format
-- Test Cases (without GetTransactions)
-- Simple config loader
-- Simple logger
+- GetCurrentBlock
+
+  ```js
+  Message: {
+    "action": "GetCurrentBlock"
+  }
+  Response: {
+    "data": {
+        "action": "GetCurrentBlock",
+        "block": Object // Same as the response from ethereum eth_getBlockByHash
+    },
+    "error": String
+  }
+  ```
+
+- Subscribe
+
+  ```js
+  Message: {
+    "action": "Subscribe",
+    "address": String // hex address with 0x
+  }
+  Response: {
+    "data": {
+        "action": "Subscribe",
+        "subscribed": Boolean
+    },
+    "error": String
+  }
+  ```
+
+- UnSubscribe
+  ```js
+  Message: {
+    "action": "UnSubscribe",
+    "address": String // hex address with 0x
+  }
+  Response: {
+    "data": {
+        "action": "UnSubscribe",
+        "subscribed": Boolean
+    },
+    "error": String
+  }
+  ```
+
+### Rest Api:
+
+- GetCurrentBlock
+
+  ```js
+  Method: Get;
+  Route: 'http://localhost:8080/current-block';
+  Response: {
+    "data": {
+        "block": Object // Same as the response from ethereum eth_getBlockByHash
+    },
+    "error": String
+  }
+  ```
+
+- GetTransactionsByAddress
+
+  ```js
+  Method: Get;
+  Route: 'http://localhost:8080/transaction/:address';
+  Param: {
+    "address" String
+  }
+  Response: {
+    "data": {
+        "block": Object // Same as the response from ethereum eth_getBlockByHash
+    },
+    "error": String
+  }
+  ```

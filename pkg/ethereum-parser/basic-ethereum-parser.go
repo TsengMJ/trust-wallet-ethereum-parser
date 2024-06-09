@@ -3,6 +3,7 @@ package evmparser
 import (
 	"errors"
 	evm "ethereum-parser/pkg/ethereum-rpc-client"
+	pubsub "ethereum-parser/pkg/pub-sub"
 	"regexp"
 	"strings"
 	"sync"
@@ -19,13 +20,13 @@ func NewBasicEthereumParser() *BasicEthereumParser {
 	}
 }
 
-func (p *BasicEthereumParser) GetCurrentBlock() (int, error) {
+func (p *BasicEthereumParser) GetCurrentBlock() (*evm.Block, error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
-	block, err := evm.GetBlockNumber()
+	block, err := pubsub.DefaultPublisher.GetLatestBlock()
 	if err != nil {
-		return -1, errors.New("error getting block number, " + err.Error())
+		return nil, errors.New("error getting block number, " + err.Error())
 	}
 
 	return block, nil

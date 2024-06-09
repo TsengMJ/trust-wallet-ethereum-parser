@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"context"
 	"ethereum-parser/config"
 	evm "ethereum-parser/pkg/ethereum-rpc-client"
 	pubsub "ethereum-parser/pkg/pub-sub"
@@ -14,10 +13,10 @@ import (
 type ListenEthereumBlockCron struct {
 	RpcUrl    string
 	Period    string
-	Publisher *pubsub.Publisher
+	Publisher *pubsub.BlockPublisher
 }
 
-func NewListenEthereumBlockCron(publisher *pubsub.Publisher) *ListenEthereumBlockCron {
+func NewListenEthereumBlockCron(publisher *pubsub.BlockPublisher) *ListenEthereumBlockCron {
 	cronConfig := config.GetConfig().Cron
 
 	return &ListenEthereumBlockCron{
@@ -55,9 +54,8 @@ func (c *ListenEthereumBlockCron) Start() {
 				return
 			}
 
-			c.Publisher.Publish(context.Background(), &pubsub.Message{
-				Data: block,
-			})
+			c.Publisher.AddBlock(block)
+			c.Publisher.Publish(block)
 
 			fmt.Println("Block number: ", i)
 			fmt.Println("Timestamp: ", time.Now())

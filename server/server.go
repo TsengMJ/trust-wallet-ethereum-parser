@@ -12,7 +12,8 @@ func StartServer() {
 	r := gin.Default()
 
 	r.GET("/ws", controller.HandleWebSocket)
-	r.POST("/publish", controller.ProduceMessage)
+	r.GET("/current-block", controller.GetCurrentBlock)
+	r.GET("/transaction/:address", controller.GetCurrentBlockTransactionsByAddress)
 
 	port := config.Config.Server.Port
 	r.Run(":" + strconv.Itoa(port))

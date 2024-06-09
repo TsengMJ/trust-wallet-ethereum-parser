@@ -17,7 +17,25 @@ type Transaction struct {
 }
 
 type Block struct {
-	Transactions []Transaction
+	Number           string
+	Hash             string
+	ParentHash       string
+	Nonce            string
+	Sha3Uncles       string
+	LogsBloom        string
+	TransactionsRoot string
+	StateRoot        string
+	ReceiptsRoot     string
+	Miner            string
+	Difficulty       string
+	TotalDifficulty  string
+	ExtraData        string
+	Size             string
+	GasLimit         string
+	GasUsed          string
+	Timestamp        string
+	Transactions     []Transaction
+	Uncles           []string
 }
 
 type JSONRPCRequest struct {
