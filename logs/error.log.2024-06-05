@@ -1,2 +1,0 @@
-{"level":"error","ts":1717567116.595542,"caller":"controller/ethereum-parser-controller.go:85","msg":"Failed to subscribe, invalid address"}
-{"level":"error","ts":1717567120.96432,"caller":"controller/ethereum-parser-controller.go:85","msg":"Failed to subscribe, invalid address"}

@@ -8,6 +8,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/joho/godotenv v1.5.1
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
+	github.com/robfig/cron v1.2.0
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0
 )

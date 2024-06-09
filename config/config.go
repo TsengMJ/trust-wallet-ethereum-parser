@@ -12,6 +12,7 @@ type EnvConfig struct {
 	Server   Server   `toml:"server"`
 	Log      Log      `toml:"log"`
 	Ethereum Ethereum `toml:"ethereum"`
+	Cron     Cron     `toml:"cron"`
 }
 
 type Server struct {
@@ -34,6 +35,11 @@ type Log struct {
 
 type Ethereum struct {
 	Url string `toml:"url"`
+}
+
+type Cron struct {
+	Url    string `toml:"url"`
+	Period string `toml:"period"`
 }
 
 var Config EnvConfig

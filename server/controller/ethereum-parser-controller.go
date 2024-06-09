@@ -2,20 +2,43 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"ethereum-parser/logger"
+
 	ethereumParser "ethereum-parser/pkg/ethereum-parser"
+
+	evm "ethereum-parser/pkg/ethereum-rpc-client"
+	pubsub "ethereum-parser/pkg/pub-sub"
 	"ethereum-parser/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
+func ProduceMessage(c *gin.Context) {
+	publisher := pubsub.DefaultPublisher
+
+	// mock message
+	message := &pubsub.Message{
+		Data: []byte("Hello, World!"),
+	}
+
+	publisher.Publish(c, message)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Message published",
+	})
+}
+
 func HandleWebSocket(c *gin.Context) {
 	log := logger.Logger
+	publisher := pubsub.DefaultPublisher
 
-	var parser ethereumParser.EthereumParser = ethereumParser.NewBasicEthereumParser()
+	parser := ethereumParser.NewBasicEthereumParser()
+
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -30,6 +53,55 @@ func HandleWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
+
+	subscriber := pubsub.NewSubscriber()
+	publisher.Subscribe(c, subscriber)
+	defer publisher.Unsubscribe(c, subscriber)
+
+	go func() {
+		for {
+			select {
+			case msg := <-subscriber.Handler:
+				if msg.Data == nil {
+					continue
+				}
+
+				if len(parser.Subscriptions) == 0 {
+					continue
+				}
+
+				var targetTxs []evm.Transaction
+
+				for _, tx := range msg.Data.(*evm.Block).Transactions {
+					fmt.Println(tx.From, tx.To, parser.Subscriptions[strings.ToLower(tx.From)], parser.Subscriptions[strings.ToLower(tx.To)])
+					if parser.Subscriptions[strings.ToLower(tx.From)] || parser.Subscriptions[strings.ToLower(tx.To)] {
+						targetTxs = append(targetTxs, tx)
+					}
+				}
+
+				if len(targetTxs) == 0 {
+					continue
+				}
+
+				response := map[string]interface{}{
+					"action": "Subscribe",
+					"txs":    targetTxs,
+				}
+
+				err := conn.WriteJSON(util.GetWebsocketSuccessResponse(response))
+				if err != nil {
+					log.Error("Failed to write message, " + err.Error())
+				}
+
+			case <-subscriber.Quit:
+				return
+			case <-c.Done():
+				return
+			case <-c.Writer.CloseNotify():
+				break
+			}
+		}
+	}()
 
 	for {
 		_, message, err := conn.ReadMessage()
@@ -93,19 +165,26 @@ func HandleWebSocket(c *gin.Context) {
 			if err := conn.WriteJSON(util.GetWebsocketSuccessResponse(response)); err != nil {
 				log.Error("Failed to write message, " + err.Error())
 			}
+		case "UnSubscribe":
+			address, ok := request["address"].(string)
+			if !ok {
+				log.Error("Invalid address format, " + err.Error())
+				conn.WriteJSON(util.GetWebsocketFailResponse("Invalid address format"))
+				continue
+			}
 
-		case "GetTransactions":
-			transactions, err := parser.GetTransactions()
+			unsubscribed, err := parser.UnSubscribe(address)
 			if err != nil {
-				log.Error("Failed to get transactions, " + err.Error())
-				conn.WriteJSON(util.GetWebsocketFailResponse("Failed to get transactions"))
+				log.Error("Failed to unsubscribe, " + err.Error())
+				conn.WriteJSON(util.GetWebsocketFailResponse("Failed to unsubscribe"))
 				continue
 			}
 
 			response := map[string]interface{}{
-				"action":       "GetTransactions",
-				"transactions": transactions,
+				"action":       "UnSubscribe",
+				"unsubscribed": unsubscribed,
 			}
+
 			if err := conn.WriteJSON(util.GetWebsocketSuccessResponse(response)); err != nil {
 				log.Error("Failed to write message, " + err.Error())
 			}
@@ -116,5 +195,4 @@ func HandleWebSocket(c *gin.Context) {
 			}
 		}
 	}
-
 }

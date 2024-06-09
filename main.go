@@ -2,7 +2,9 @@ package main
 
 import (
 	"ethereum-parser/config"
+	"ethereum-parser/cron"
 	"ethereum-parser/logger"
+	pubsub "ethereum-parser/pkg/pub-sub"
 	"ethereum-parser/server"
 
 	"os"
@@ -29,6 +31,10 @@ func main() {
 	if err != nil {
 		panic("Error initializing logger, " + err.Error())
 	}
+
+	publisher := pubsub.DefaultPublisher
+	cron := cron.NewListenEthereumBlockCron(publisher)
+	go cron.Start()
 
 	// Start rest api server
 	server.StartServer()

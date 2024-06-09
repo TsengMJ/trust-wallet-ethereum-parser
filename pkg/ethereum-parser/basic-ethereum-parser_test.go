@@ -35,7 +35,6 @@ func TestNewBasicEthereumParser(t *testing.T) {
 		parser := evmparser.NewBasicEthereumParser()
 
 		assert.NotNil(t, parser)
-		assert.Equal(t, parser.LastUpdateBlock, parser.CurrentBlock)
 		assert.Empty(t, parser.Subscriptions)
 	})
 
@@ -55,9 +54,7 @@ func TestGetCurrentBlock(t *testing.T) {
 			},
 		}
 		parser := evmparser.BasicEthereumParser{
-			LastUpdateBlock: 0,
-			CurrentBlock:    0,
-			Subscriptions:   make(map[string]bool),
+			Subscriptions: make(map[string]bool),
 		}
 
 		currentBlock, err := parser.GetCurrentBlock()
@@ -71,9 +68,7 @@ func TestSubscribe(t *testing.T) {
 	// Test Case 0: Success
 	t.Run("successful subscription", func(t *testing.T) {
 		parser := evmparser.BasicEthereumParser{
-			LastUpdateBlock: 0,
-			CurrentBlock:    0,
-			Subscriptions:   make(map[string]bool),
+			Subscriptions: make(map[string]bool),
 		}
 
 		subscribed, err := parser.Subscribe("0x1234")
@@ -85,9 +80,7 @@ func TestSubscribe(t *testing.T) {
 	// Test Case 1: Duplicate subscription
 	t.Run("duplicate subscription", func(t *testing.T) {
 		parser := evmparser.BasicEthereumParser{
-			LastUpdateBlock: 0,
-			CurrentBlock:    0,
-			Subscriptions:   make(map[string]bool),
+			Subscriptions: make(map[string]bool),
 		}
 
 		parser.Subscribe("0x1234")
@@ -101,9 +94,7 @@ func TestSubscribe(t *testing.T) {
 	// Test Case 2: Subscribe with uppercase address
 	t.Run("subscribe with uppercase address", func(t *testing.T) {
 		parser := evmparser.BasicEthereumParser{
-			LastUpdateBlock: 0,
-			CurrentBlock:    0,
-			Subscriptions:   make(map[string]bool),
+			Subscriptions: make(map[string]bool),
 		}
 
 		subscribed, err := parser.Subscribe("0XABCD")

@@ -12,6 +12,7 @@ func StartServer() {
 	r := gin.Default()
 
 	r.GET("/ws", controller.HandleWebSocket)
+	r.POST("/publish", controller.ProduceMessage)
 
 	port := config.Config.Server.Port
 	r.Run(":" + strconv.Itoa(port))
