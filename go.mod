@@ -4,6 +4,7 @@ go 1.22.1
 
 require (
 	github.com/BurntSushi/toml v1.4.0
+	github.com/gammazero/deque v0.2.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/joho/godotenv v1.5.1
@@ -21,7 +22,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
-	github.com/gammazero/deque v0.2.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -41,6 +41,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect

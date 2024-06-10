@@ -57,9 +57,6 @@ func (c *ListenEthereumBlockCron) Start() {
 			c.Publisher.AddBlock(block)
 			c.Publisher.Publish(block)
 
-			fmt.Println("Block number: ", i)
-			fmt.Println("Timestamp: ", time.Now())
-
 			lastUpdateBlock = i
 
 			time.Sleep(1 * time.Second)
@@ -68,8 +65,6 @@ func (c *ListenEthereumBlockCron) Start() {
 
 	cronInstance.Start()
 
-	// Keep the program running
-	fmt.Println("Scheduler started. Press Ctrl+C to stop.")
 	select {}
 
 }
