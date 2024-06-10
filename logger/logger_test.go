@@ -1,118 +1,127 @@
 package logger_test
 
 import (
+	"errors"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"ethereum-parser/config"
 	"ethereum-parser/logger"
-	"testing"
 )
 
 func TestInitLog(t *testing.T) {
-	// Test Case 0: Success
-	t.Run("Success", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
-				Path:     "./test_logs",
+	cases := []struct {
+		name          string
+		logConfig     *config.Log
+		expectedErr   error
+		expectedPanic bool
+	}{
+		{
+			name: "Valid configuration",
+			logConfig: &config.Log{
+				Path:     "./logs",
 				ErrorLog: "error.log",
 				WarnLog:  "warn.log",
 				InfoLog:  "info.log",
 				DebugLog: "debug.log",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err != nil {
-			t.Fatalf("Expected no error, got %v", err)
-		}
-	})
-
-	// Test Case 1: Log path is empty
-	t.Run("Log path is empty", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
+			expectedErr:   nil,
+			expectedPanic: false,
+		},
+		{
+			name: "Empty log path",
+			logConfig: &config.Log{
 				Path:     "",
 				ErrorLog: "error.log",
 				WarnLog:  "warn.log",
 				InfoLog:  "info.log",
 				DebugLog: "debug.log",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err == nil {
-			t.Fatalf("Expected error, got nil")
-		}
-	})
-
-	// Test Case 2: Error log is empty
-	t.Run("Error creating log directory", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
-				Path:     "./test_logs",
+			expectedErr:   errors.New("Log path is empty"),
+			expectedPanic: false,
+		},
+		{
+			name: "Empty error log",
+			logConfig: &config.Log{
+				Path:     "./logs",
 				ErrorLog: "",
 				WarnLog:  "warn.log",
 				InfoLog:  "info.log",
 				DebugLog: "debug.log",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err == nil {
-			t.Fatalf("Expected error, got nil")
-		}
-	})
-
-	// Test Case 3: Warn log is empty
-	t.Run("Warn log is empty", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
-				Path:     "./test_logs",
+			expectedErr:   errors.New("Error log is empty"),
+			expectedPanic: false,
+		},
+		{
+			name: "Empty warn log",
+			logConfig: &config.Log{
+				Path:     "./logs",
 				ErrorLog: "error.log",
 				WarnLog:  "",
 				InfoLog:  "info.log",
 				DebugLog: "debug.log",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err == nil {
-			t.Fatalf("Expected error, got nil")
-		}
-	})
-
-	// Test Case 4: Info log is empty
-	t.Run("Info log is empty", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
-				Path:     "./test_logs",
+			expectedErr:   errors.New("Warn log is empty"),
+			expectedPanic: false,
+		},
+		{
+			name: "Empty info log",
+			logConfig: &config.Log{
+				Path:     "./logs",
 				ErrorLog: "error.log",
 				WarnLog:  "warn.log",
 				InfoLog:  "",
 				DebugLog: "debug.log",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err == nil {
-			t.Fatalf("Expected error, got nil")
-		}
-	})
-
-	// Test Case 5: Debug log is empty
-	t.Run("Debug log is empty", func(t *testing.T) {
-		config.Config = config.EnvConfig{
-			Log: config.Log{
-				Path:     "./test_logs",
+			expectedErr:   errors.New("Info log is empty"),
+			expectedPanic: false,
+		},
+		{
+			name: "Empty debug log",
+			logConfig: &config.Log{
+				Path:     "./logs",
 				ErrorLog: "error.log",
 				WarnLog:  "warn.log",
 				InfoLog:  "info.log",
 				DebugLog: "",
-				MaxAge:   7,
+				MaxAge:   7, // 7 days
 			},
-		}
-		err := logger.InitLog()
-		if err == nil {
-			t.Fatalf("Expected error, got nil")
-		}
-	})
+			expectedErr:   errors.New("Debug log is empty"),
+			expectedPanic: false,
+		},
+	}
 
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			// Set the configuration
+			config.Config.Log = *c.logConfig
+
+			// Cleanup logs directory after test
+			defer os.RemoveAll("./logs")
+
+			// Call InitLog and capture panic if any
+			defer func() {
+				if r := recover(); r != nil {
+					assert.True(t, c.expectedPanic, "Unexpected panic occurred")
+				}
+			}()
+
+			err := logger.InitLog()
+
+			if c.expectedErr != nil {
+				assert.Error(t, err, "Expected an error")
+				assert.ErrorContains(t, err, c.expectedErr.Error(), "Unexpected error")
+			} else {
+				assert.NoError(t, err, "Unexpected error")
+				assert.NotNil(t, logger.Logger, "Logger is nil after initialization")
+			}
+		})
+	}
 }

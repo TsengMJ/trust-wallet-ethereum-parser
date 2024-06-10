@@ -2,14 +2,21 @@
 port = 8080
 
 [log]
-level = "info"
+level = "debug"
 path = "./logs"
-name = "ethereum-parser"
+name = "app.log"
 error_log = "error.log"
 warn_log = "warn.log"
 info_log = "info.log"
 debug_log = "debug.log"
-max_size = 300
-max_backups = 10
-max_age= 7
+max_size = 1
+max_backups = 1
+max_age= 1
 disable_stacktrace = false
+
+[ethereum]
+url = "ethereum-rpc-url"
+
+[cron]
+url = "ethereum-rpc-url"
+period = "@every 1s"

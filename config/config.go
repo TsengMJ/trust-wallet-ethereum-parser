@@ -63,6 +63,10 @@ func InitConfig(folderPath *string, env *string) error {
 		return errors.New("Error decoding config file, " + err.Error())
 	}
 
+	if Config == (EnvConfig{}) {
+		return errors.New("Failed to decode config file")
+	}
+
 	return nil
 }
 

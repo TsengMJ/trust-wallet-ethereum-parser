@@ -81,7 +81,10 @@ func CallJSONRPC(method string, params []interface{}) (json.RawMessage, error) {
 	if err != nil {
 		return nil, errors.New("error sending request, " + err.Error())
 	}
-	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, errors.New("error sending request, status code: " + strconv.Itoa(resp.StatusCode))
+	}
 
 	var rpcResp JSONRPCResponse
 	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
@@ -99,6 +102,10 @@ func GetBlockNumber() (int, error) {
 	result, err := CallJSONRPC("eth_blockNumber", []interface{}{})
 	if err != nil {
 		return 0, errors.New("error getting block number, " + err.Error())
+	}
+
+	if result == nil {
+		return 0, errors.New("block number is empty")
 	}
 
 	var hexBlockNumber string

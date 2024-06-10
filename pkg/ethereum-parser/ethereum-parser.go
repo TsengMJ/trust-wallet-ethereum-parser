@@ -1,4 +1,4 @@
-package evmparser
+package ethereumparser
 
 import (
 	evm "ethereum-parser/pkg/ethereum-rpc-client"

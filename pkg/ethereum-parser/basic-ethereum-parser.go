@@ -1,10 +1,10 @@
-package evmparser
+package ethereumparser
 
 import (
 	"errors"
 	evm "ethereum-parser/pkg/ethereum-rpc-client"
 	pubsub "ethereum-parser/pkg/pub-sub"
-	"regexp"
+	"ethereum-parser/util"
 	"strings"
 	"sync"
 )
@@ -36,7 +36,7 @@ func (p *BasicEthereumParser) Subscribe(address string) (bool, error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
-	if !isValidAddress(address) {
+	if !util.IsValidAddress(address) {
 		return false, errors.New("invalid address")
 	}
 
@@ -49,7 +49,7 @@ func (p *BasicEthereumParser) UnSubscribe(address string) (bool, error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
-	if !isValidAddress(address) {
+	if !util.IsValidAddress(address) {
 		return false, errors.New("invalid address")
 	}
 
@@ -62,9 +62,4 @@ func (p *BasicEthereumParser) GetTransactions() ([]evm.Transaction, error) {
 	var transactions []evm.Transaction
 
 	return transactions, nil
-}
-
-func isValidAddress(v string) bool {
-	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
-	return re.MatchString(v)
 }

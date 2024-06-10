@@ -12,6 +12,7 @@ import (
 /*
 dev: This demo publisher including block storage and subscriber management.
 */
+
 type BlockPublisher struct {
 	sync.Mutex
 	subs   map[*BlockSubscriber]bool
@@ -19,6 +20,10 @@ type BlockPublisher struct {
 }
 
 var DefaultPublisher *BlockPublisher = NewBlockPublisher()
+
+func SetDefaultPublisher(p *BlockPublisher) {
+	DefaultPublisher = p
+}
 
 func NewBlockPublisher() *BlockPublisher {
 	return &BlockPublisher{
