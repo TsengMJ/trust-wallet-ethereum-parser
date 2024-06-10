@@ -1,4 +1,0 @@
-{"level":"error","ts":1717953390.594076,"caller":"controller/ethereum-parser-websocket-controller.go:82","msg":"Failed to get current block, error converting block number, strconv.Atoi: parsing \"0x1320693\": invalid syntax"}
-{"level":"error","ts":1717953393.0236318,"caller":"controller/ethereum-parser-websocket-controller.go:82","msg":"Failed to get current block, error converting block number, strconv.Atoi: parsing \"0x1320693\": invalid syntax"}
-{"level":"error","ts":1717953563.189003,"caller":"controller/ethereum-parser-websocket-controller.go:82","msg":"Failed to get current block, error converting block number, strconv.ParseInt: parsing \"0x13206a1\": invalid syntax"}
-{"level":"error","ts":1717953738.3867369,"caller":"controller/ethereum-parser-websocket-controller.go:82","msg":"Failed to get current block, error converting block number, strconv.ParseInt: parsing \"0x13206b0\": invalid syntax"}

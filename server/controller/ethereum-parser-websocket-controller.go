@@ -39,7 +39,6 @@ func HandleWebSocket(c *gin.Context) {
 		conn.WriteJSON(util.GetFailResponse("Failed to subscribe"))
 		return
 	}
-
 	defer publisher.Unsubscribe(subscriber)
 
 	go notifySubscribers(conn, subscriber, parser)
@@ -48,6 +47,11 @@ func HandleWebSocket(c *gin.Context) {
 	for {
 		request, err := getRequest(conn)
 		if err != nil {
+			if err := conn.Close(); err != nil {
+				log.Error("Failed to close connection, " + err.Error())
+				break
+			}
+
 			log.Error("Failed to get websocket request, " + err.Error())
 			conn.WriteJSON(util.GetFailResponse("Failed to get websocket request, " + err.Error()))
 			continue
